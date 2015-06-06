@@ -3,16 +3,12 @@
 
 #include <vector>
 #include <string>
-#include <exception>
 #include <iostream>
 
 #include "Data.h"
 #include "DataReader.h"
 #include "ConstIterable.h"
-
-class MalformedPacket : public std::exception
-{
-};
+#include "MalformedPacket.h"
 
 enum class DNS_Type : int
 {

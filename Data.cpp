@@ -18,6 +18,36 @@ Data::Data(const Data & data) : data(data.data)
 {
 }
 
+uint8_t & Data::getAt(unsigned pos)
+{
+	return data[pos];
+}
+
+const uint8_t & Data::getAt(unsigned pos) const
+{
+	return data[pos];
+}
+
+uint16_t & Data::getAt16(unsigned pos)
+{
+	return *((uint16_t*) (getPtr() + pos));
+}
+
+const uint16_t & Data::getAt16(unsigned pos) const
+{
+	return *((const uint16_t*) (getPtr() + pos));
+}
+
+uint32_t & Data::getAt32(unsigned pos)
+{
+	return *((uint32_t*) (getPtr() + pos));
+}
+
+const uint32_t & Data::getAt32(unsigned pos) const
+{
+	return *((const uint32_t*) (getPtr() + pos));
+}
+
 const uint8_t * Data::getPtr() const
 {
 	return data.data();

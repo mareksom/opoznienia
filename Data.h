@@ -13,6 +13,13 @@ public:
 	Data(const uint8_t * msg, unsigned length);
 	Data(const Data & data);
 
+	uint8_t & getAt(unsigned pos);
+	const uint8_t & getAt(unsigned pos) const;
+	uint16_t & getAt16(unsigned pos);
+	const uint16_t & getAt16(unsigned pos) const;
+	uint32_t & getAt32(unsigned pos);
+	const uint32_t & getAt32(unsigned pos) const;
+
 	const uint8_t * getPtr() const;
 	unsigned getLength() const;
 

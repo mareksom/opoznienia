@@ -2,35 +2,15 @@
 #include "IOService.h"
 #include "Options.h"
 #include "Error.h"
+#include "Utils.h"
 
 #include <boost/bind.hpp>
 #include <iostream>
-#include <chrono>
 
 using boost::asio::ip::udp;
 using boost::asio::error::operation_aborted;
 using std::cout;
 using std::endl;
-
-namespace {
-
-uint64_t htonll(uint64_t x)
-{
-	return (1 == htonl(1)) ? x : ((uint64_t) htonl(x & 0xFFFFFFFF) << 32) | htonl(x >> 32);
-}
-uint64_t ntohll(uint64_t x)
-{
-	return (1 == ntohl(1)) ? x : ((uint64_t) ntohl(x & 0xffffffff) << 32) | ntohl(x >> 32);
-}
-
-uint64_t getMicroTime()
-{
-	return (uint64_t) std::chrono::duration_cast< std::chrono::microseconds > (
-		std::chrono::system_clock::now().time_since_epoch()
-	).count();
-}
-
-} // namespace
 
 // UDPServer --------------------------------
 

@@ -2,12 +2,14 @@
 #define _DATAREADER_H_
 
 #include <exception>
+#include <vector>
 #include <cstdint>
 
 class DataReader
 {
 public:
 	DataReader(const uint8_t * data, unsigned length);
+	DataReader(const std::vector<uint8_t> & data);
 
 	const uint8_t * getPtr() const;
 	unsigned getLength() const;

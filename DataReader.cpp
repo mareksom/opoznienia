@@ -6,6 +6,10 @@ DataReader::DataReader(const uint8_t * data, unsigned length) : data(data), leng
 {
 }
 
+DataReader::DataReader(const std::vector<uint8_t> & data) : DataReader(data.data(), data.size())
+{
+}
+
 const uint8_t * DataReader::getPtr() const
 {
 	return data;

@@ -3,6 +3,7 @@
 #include "Dns.h"
 #include "IOService.h"
 #include "UDPMethod.h"
+#include "ICMPMethod.h"
 
 #include <boost/asio.hpp>
 #include <boost/array.hpp>
@@ -11,6 +12,7 @@
 using std::cout;
 
 using boost::asio::ip::udp;
+using boost::asio::ip::icmp;
 
 /*
 void programx()
@@ -59,6 +61,7 @@ void programx()
 
 void program()
 {
+	/*
 	UDPServer serverUDP;
 
 	udp::resolver resolver(IO);
@@ -66,6 +69,12 @@ void program()
 	udp::endpoint receiver_endpoint = *resolver.resolve(query);
 
 	UDPClient clientUDP(receiver_endpoint);
+	*/
+
+	icmp::endpoint receiver_endpoint_icmp(boost::asio::ip::address::from_string("8.8.8.8"), 0);
+
+	ICMPClient clientICMP(receiver_endpoint_icmp);
+
 	IO.run();
 }
 
