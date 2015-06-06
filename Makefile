@@ -1,8 +1,8 @@
 BUILD = build
-CPP = g++
+CPP = clang++
 CPPFLAGS = -std=c++11 -g
 LDFLAGS = -levent -lboost_system -lpthread
-OBJS = main.o Options.o Error.o
+OBJS = main.o Options.o Error.o Data.o DataReader.o Dns.o IOService.o UDPMethod.o
 
 all: $(BUILD)/run.e
 
