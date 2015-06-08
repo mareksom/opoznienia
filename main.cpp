@@ -4,6 +4,8 @@
 #include "IOService.h"
 #include "UDPMethod.h"
 #include "ICMPMethod.h"
+#include "MDns.h"
+#include "Utils.h"
 
 #include <boost/asio.hpp>
 #include <boost/array.hpp>
@@ -71,11 +73,18 @@ void program()
 	UDPClient clientUDP(receiver_endpoint);
 	*/
 
+	/*
 	icmp::endpoint receiver_endpoint_icmp(boost::asio::ip::address::from_string("8.8.8.8"), 0);
 
 	ICMPClient clientICMP(receiver_endpoint_icmp);
 
+	*/
+
+	MDnsDiscoverer mDnsDiscoverer;
+
+	cout << "przed run\n";
 	IO.run();
+	cout << "po run\n";
 }
 
 int main(int argc, char ** argv)

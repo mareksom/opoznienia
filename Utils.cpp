@@ -1,5 +1,6 @@
 #include <chrono>
 #include <arpa/inet.h>
+#include <random>
 
 uint64_t htonll(uint64_t x)
 {
@@ -32,4 +33,12 @@ uint16_t OnesComplementSum(uint16_t * data, unsigned length)
 	for(unsigned i = 0; i < length; i++)
 		sum = OnesComplementSum(sum, data[i]);
 	return sum;
+}
+
+int randomInt(int a, int b)
+{
+	static std::random_device rd;
+	static std::default_random_engine engine(rd());
+	std::uniform_int_distribution<int> uniformDist(a, b);
+	return uniformDist(engine);
 }

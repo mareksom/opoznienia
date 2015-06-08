@@ -11,4 +11,6 @@ uint64_t getMicroTime();
 uint16_t OnesComplementSum(uint16_t a, uint16_t b);
 uint16_t OnesComplementSum(uint16_t * data, unsigned length);
 
+int randomInt(int a, int b);
+
 #endif

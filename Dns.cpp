@@ -15,6 +15,13 @@ DNS_Name::DNS_Name(const vector< string > & labels) : labels(labels)
 {
 }
 
+string DNS_Name::getFirstLabel() const
+{
+	if(labels.empty())
+		return string();
+	return labels[0];
+}
+
 string DNS_Name::getName() const
 {
 	string name;
@@ -25,6 +32,23 @@ string DNS_Name::getName() const
 		name += s;
 	}
 	return name;
+}
+
+bool DNS_Name::empty() const
+{
+	return labels.empty();
+}
+
+bool DNS_Name::endsWith(const DNS_Name & name) const
+{
+	unsigned size_l = labels.size();
+	unsigned name_size_l = name.labels.size();
+	if(name_size_l > size_l)
+		return false;
+	for(int i = 0; i < name_size_l; i++)
+		if(labels[size_l - 1 - i] != name.labels[name_size_l - 1 - i])
+			return false;
+	return true;
 }
 
 Data DNS_Name::getData() const
@@ -38,6 +62,16 @@ Data DNS_Name::getData() const
 	}
 	data.append((uint8_t) 0);
 	return data;
+}
+
+void DNS_Name::append(const std::string & label)
+{
+	labels.push_back(label);
+}
+
+void DNS_Name::prepend(const std::string & label)
+{
+	labels.insert(labels.begin(), label);
 }
 
 unsigned DNS_Name::readFromData(DataReader reader, unsigned pos)
@@ -83,6 +117,21 @@ void DNS_Name::swap(DNS_Name & x) noexcept
 	std::swap(labels, x.labels);
 }
 
+bool DNS_Name::operator == (const DNS_Name & name) const
+{
+	return labels == name.labels;
+}
+
+bool DNS_Name::operator != (const DNS_Name & name) const
+{
+	return !(*this == name);
+}
+
+bool DNS_Name::operator < (const DNS_Name & name) const
+{
+	return labels < name.labels;
+}
+
 std::ostream & operator << (std::ostream & stream, const DNS_Name & name)
 {
 	for(int i = 0; i < (int) name.labels.size(); i++)
@@ -95,6 +144,15 @@ std::ostream & operator << (std::ostream & stream, const DNS_Name & name)
 }
 
 // DNS_Question ---------------
+
+DNS_Question::DNS_Question() : unicast(false)
+{
+}
+
+bool DNS_Question::getUnicast() const
+{
+	return unicast;
+}
 
 DNS_QType DNS_Question::getQType() const
 {
@@ -111,26 +169,19 @@ DNS_Name DNS_Question::getQName() const
 	return qname;
 }
 
-void DNS_Question::setQType(DNS_QType qtype)
-{
-	this->qtype = qtype;
-}
-
-void DNS_Question::setQClass(DNS_QClass qclass)
-{
-	this->qclass = qclass;
-}
-
-void DNS_Question::setQName(const DNS_Name & qname)
-{
-	this->qname = qname;
-}
+void DNS_Question::setUnicast(bool unicast)         { this->unicast = unicast; }
+void DNS_Question::setQType(DNS_QType qtype)        { this->qtype = qtype;     }
+void DNS_Question::setQClass(DNS_QClass qclass)     { this->qclass = qclass;   }
+void DNS_Question::setQName(const DNS_Name & qname) { this->qname = qname;     }
 
 Data DNS_Question::getData() const
 {
 	Data data = qname.getData();
 	data.append((uint16_t) qtype);
-	data.append((uint16_t) qclass);
+	uint16_t classField = (uint16_t) qclass;
+	if(unicast)
+		classField |= ((uint16_t) 1 << 15);
+	data.append(classField);
 	return data;
 }
 
@@ -141,10 +192,20 @@ unsigned DNS_Question::readFromData(DataReader reader, unsigned pos)
 		DNS_Name newName;
 		pos = newName.readFromData(reader, pos);
 		DNS_QType newType = (DNS_QType) reader.read16(pos);
-		DNS_QClass newClass = (DNS_QClass) reader.read16(pos);
+		bool newUnicast = false;
+
+		uint16_t classField = reader.read16(pos);
+		if(classField & ((uint16_t) 1 << 15))
+		{
+			classField ^= (uint16_t) 1 << 15;
+			newUnicast = true;
+		}
+		DNS_QClass newClass = (DNS_QClass) classField;
+
 		std::swap(qname, newName);
 		std::swap(qtype, newType);
 		std::swap(qclass, newClass);
+		std::swap(unicast, newUnicast);
 		return pos;
 	}
 	catch(const DataReaderOutOfBounds & droob)
@@ -157,35 +218,18 @@ std::ostream & operator << (std::ostream & stream, const DNS_Question & question
 {
 	return stream << "Question(" << question.qname
 		<< ", qtype = " << (int) question.qtype
-		<< ", qclass = " << (int) question.qclass << ")";
+		<< ", qclass = " << (int) question.qclass
+		<< ", " << (question.unicast ? "QU" : "QM") << ")";
 }
 
 // DNS_RRecord ------------------------------------
 
-DNS_Name DNS_RRecord::getName() const
-{
-	return name;
-}
-
-DNS_Type DNS_RRecord::getType() const
-{
-	return type;
-}
-
-DNS_Class DNS_RRecord::getClass() const
-{
-	return class_;
-}
-
-uint32_t DNS_RRecord::getTTL() const
-{
-	return ttl;
-}
-
-Data DNS_RRecord::getRData() const
-{
-	return rdata;
-}
+DNS_Name DNS_RRecord::getName() const      { return name;       }
+DNS_Type DNS_RRecord::getType() const      { return type;       }
+DNS_Class DNS_RRecord::getClass() const    { return class_;     }
+uint32_t DNS_RRecord::getTTL() const       { return ttl;        }
+Data DNS_RRecord::getRData() const         { return rdata;      }
+DNS_Name DNS_RRecord::getRDataName() const { return rdata_name; }
 
 Data DNS_RRecord::getData() const
 {
@@ -197,6 +241,12 @@ Data DNS_RRecord::getData() const
 	data.append(rdata);
 	return data;
 }
+
+void DNS_RRecord::setName(const DNS_Name & name) { this->name = name;     }
+void DNS_RRecord::setType(DNS_Type type)         { this->type = type;     }
+void DNS_RRecord::setClass(DNS_Class class_)     { this->class_ = class_; }
+void DNS_RRecord::setTTL(uint32_t ttl)           { this->ttl = ttl;       }
+void DNS_RRecord::setData(const Data & rdata)    { this->rdata = rdata;   }
 
 unsigned DNS_RRecord::readFromData(DataReader reader, unsigned pos)
 {
@@ -217,6 +267,16 @@ unsigned DNS_RRecord::readFromData(DataReader reader, unsigned pos)
 		std::swap(class_, newClass);
 		std::swap(ttl, newTTL);
 		std::swap(rdata, newRData);
+
+		try
+		{
+			rdata_name.readFromData(reader, pos - rdata.getLength());
+		}
+		catch(MalformedPacket & mp)
+		{
+			rdata_name = DNS_Name();
+		}
+
 		return pos;
 	}
 	catch(const DataReaderOutOfBounds & droob)
@@ -236,7 +296,8 @@ std::ostream & operator << (std::ostream & stream, const DNS_RRecord & record)
 
 // DNS_Packet -----------------------------------
 
-DNS_Packet::DNS_Packet()
+DNS_Packet::DNS_Packet() :
+	id(0), qr(0), aa(0), tc(0), rd(0), ra(0), z(0), opcode(DNS_OPCode::QUERY), rcode(DNS_RCode::NO_ERROR)
 {
 }
 
@@ -246,16 +307,16 @@ DNS_Packet::DNS_Packet(DataReader reader, unsigned pos)
 	{
 		id = reader.read16(pos);
 
-		int flags = reader.read8(pos);
-		qr = flags & (1 << 7);                                 // 10000000
-		opcode = (DNS_OPCode) (flags & (((1 << 4) - 1) << 3)); // 01111000
-		aa = flags & 8;                                        // 00000100
-		tc = flags & 2;                                        // 00000010
-		rd = flags & 1;                                        // 00000001
+		uint8_t flags = reader.read8(pos);
+		qr = (flags & (1 << 7)) >> 7;                                 // 10000000
+		opcode = (DNS_OPCode) ((flags & (((1 << 4) - 1) << 3)) >> 3); // 01111000
+		aa = (flags & (1 << 2)) >> 2;                                 // 00000100
+		tc = (flags & (1 << 1)) >> 1;                                 // 00000010
+		rd = (flags & (1 << 0)) >> 0;                                 // 00000001
 
 		flags = reader.read8(pos);
-		ra = flags & (1 << 7);                        // 10000000
-		z = flags & (((1 << 3) - 1) << 4);            // 01110000
+		ra = (flags & (1 << 7)) >> 7;                 // 10000000
+		z = (flags & (((1 << 3) - 1) << 4)) >> 4;     // 01110000
 		rcode = (DNS_RCode) (flags & ((1 << 4) - 1)); // 00001111
 
 		unsigned qdcount = reader.read16(pos);
@@ -338,25 +399,10 @@ bool DNS_Packet::getRA() const { return ra; }
 uint8_t DNS_Packet::getZ() const { return z; }
 DNS_RCode DNS_Packet::getRCode() const { return rcode; }
 
-ConstIterable< std::vector< DNS_Question > > DNS_Packet::getQD() const
-{
-	return ConstIterable< decltype(qd) >(qd);
-}
-
-ConstIterable< std::vector< DNS_RRecord > > DNS_Packet::getAN() const
-{
-	return ConstIterable< decltype(an) >(an);
-}
-
-ConstIterable< std::vector< DNS_RRecord > > DNS_Packet::getNS() const
-{
-	return ConstIterable< decltype(ns) >(ns);
-}
-
-ConstIterable< std::vector< DNS_RRecord > > DNS_Packet::getAR() const
-{
-	return ConstIterable< decltype(ar) >(ar);
-}
+std::vector< DNS_Question > DNS_Packet::getQD() const { return qd; }
+std::vector< DNS_RRecord > DNS_Packet::getAN() const { return an; }
+std::vector< DNS_RRecord > DNS_Packet::getNS() const { return ns; }
+std::vector< DNS_RRecord > DNS_Packet::getAR() const { return ar; }
 
 unsigned DNS_Packet::getQDCount() const { return (unsigned) qd.size(); }
 unsigned DNS_Packet::getANCount() const { return (unsigned) an.size(); }

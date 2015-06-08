@@ -7,7 +7,6 @@
 
 #include "Data.h"
 #include "DataReader.h"
-#include "ConstIterable.h"
 #include "MalformedPacket.h"
 
 enum class DNS_Type : int
@@ -24,7 +23,7 @@ enum class DNS_QType : int
 	A = 1, NC = 2, MD = 3, MF = 4, CNAME = 5, SOA = 6, MB = 7, MG = 8,
 	MR = 9, NULL_ = 10, WKS = 11, PTR = 12, HINFO = 13, MINFO = 14,
 	MX = 15, TXT = 16,
-	AXFR = 252, MAILB = 253, MAILA = 254, ALL = 255
+	AXFR = 252, MAILB = 253, MAILA = 254, ANY = 255
 };
 
 enum class DNS_Class : int
@@ -37,7 +36,7 @@ enum class DNS_QClass : int
 {
 	NONE = 0,
 	IN = 1, CS = 2, CH = 3, HS = 4,
-	ALL = 255
+	ANY = 255
 };
 
 class DNS_Name
@@ -53,12 +52,22 @@ public:
 
 	DNS_Name(const std::vector< std::string > & labels);
 
+	std::string getFirstLabel() const;
 	std::string getName() const;
+	bool empty() const;
+	bool endsWith(const DNS_Name & suffix) const;
 	Data getData() const;
+
+	void append(const std::string & label);
+	void prepend(const std::string & label);
 
 	unsigned readFromData(DataReader reader, unsigned pos);
 
 	void swap(DNS_Name & x) noexcept;
+
+	bool operator == (const DNS_Name & name) const;
+	bool operator != (const DNS_Name & name) const;
+	bool operator < (const DNS_Name & name) const;
 
 	friend std::ostream & operator << (std::ostream & stream, const DNS_Name & name);
 
@@ -69,10 +78,14 @@ private:
 class DNS_Question
 {
 public:
+	DNS_Question();
+
+	bool getUnicast() const;
 	DNS_QType getQType() const;
 	DNS_QClass getQClass() const;
 	DNS_Name getQName() const;
 
+	void setUnicast(bool unicast);
 	void setQType(DNS_QType qtype);
 	void setQClass(DNS_QClass qclass);
 	void setQName(const DNS_Name & qname);
@@ -84,6 +97,8 @@ public:
 	friend std::ostream & operator << (std::ostream & stream, const DNS_Question & question);
 
 private:
+	bool unicast;
+	
 	DNS_Name qname;
 	DNS_QType qtype;
 	DNS_QClass qclass;
@@ -97,8 +112,15 @@ public:
 	DNS_Class getClass() const;
 	uint32_t getTTL() const;
 	Data getRData() const;
+	DNS_Name getRDataName() const;
 
 	Data getData() const;
+
+	void setName(const DNS_Name & name);
+	void setType(DNS_Type type);
+	void setClass(DNS_Class class_);
+	void setTTL(uint32_t ttl);
+	void setData(const Data & rdata);
 
 	unsigned readFromData(DataReader reader, unsigned pos);
 
@@ -110,6 +132,8 @@ private:
 	DNS_Class class_;
 	uint32_t ttl;
 	Data rdata;
+
+	DNS_Name rdata_name;
 };
 
 enum class DNS_OPCode : int
@@ -140,10 +164,10 @@ public:
 	bool getRA() const;
 	uint8_t getZ() const;
 	DNS_RCode getRCode() const;
-	ConstIterable< std::vector< DNS_Question > > getQD() const;
-	ConstIterable< std::vector< DNS_RRecord > > getAN() const;
-	ConstIterable< std::vector< DNS_RRecord > > getNS() const;
-	ConstIterable< std::vector< DNS_RRecord > > getAR() const;
+	std::vector< DNS_Question > getQD() const;
+	std::vector< DNS_RRecord > getAN() const;
+	std::vector< DNS_RRecord > getNS() const;
+	std::vector< DNS_RRecord > getAR() const;
 	unsigned getQDCount() const;
 	unsigned getANCount() const;
 	unsigned getNSCount() const;
