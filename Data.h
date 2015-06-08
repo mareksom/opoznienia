@@ -27,6 +27,7 @@ public:
 	void append(uint8_t value);
 	void append(uint16_t value);
 	void append(uint32_t value);
+	void append(uint64_t value);
 
 	template<typename Arg1, typename ...Args>
 	void append(Arg1 value, Args ...args)

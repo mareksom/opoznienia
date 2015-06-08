@@ -70,14 +70,24 @@ void Data::append(uint8_t value)
 
 void Data::append(uint16_t value)
 {
-	//value = htons(value);
 	data.emplace_back((uint8_t) ((value >> 8) & ((1 << 8) - 1)));
 	data.emplace_back((uint8_t) ((value >> 0) & ((1 << 8) - 1)));
 }
 
 void Data::append(uint32_t value)
 {
-	//value = htonl(value);
+	data.emplace_back((uint8_t) ((value >> 24) & ((1 << 8) - 1)));
+	data.emplace_back((uint8_t) ((value >> 16) & ((1 << 8) - 1)));
+	data.emplace_back((uint8_t) ((value >>  8) & ((1 << 8) - 1)));
+	data.emplace_back((uint8_t) ((value >>  0) & ((1 << 8) - 1)));
+}
+
+void Data::append(uint64_t value)
+{
+	data.emplace_back((uint8_t) ((value >> 56) & ((1 << 8) - 1)));
+	data.emplace_back((uint8_t) ((value >> 48) & ((1 << 8) - 1)));
+	data.emplace_back((uint8_t) ((value >> 40) & ((1 << 8) - 1)));
+	data.emplace_back((uint8_t) ((value >> 32) & ((1 << 8) - 1)));
 	data.emplace_back((uint8_t) ((value >> 24) & ((1 << 8) - 1)));
 	data.emplace_back((uint8_t) ((value >> 16) & ((1 << 8) - 1)));
 	data.emplace_back((uint8_t) ((value >>  8) & ((1 << 8) - 1)));

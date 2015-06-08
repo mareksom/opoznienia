@@ -8,17 +8,9 @@ using boost::asio::ip::address_v4;
 
 namespace {
 
-struct compareAddress_v4
-{
-	bool operator () (const address_v4 & a, const address_v4 & b)
-	{
-		return a.to_ulong() < b.to_ulong();
-	}
-};
-
 std::map<
 	std::string,
-	std::set<address_v4, compareAddress_v4>
+	std::set<address_v4>
 > ipList;
 
 } // namespace
@@ -41,7 +33,7 @@ void removeIP(address_v4 ip, const std::string & service)
 
 std::vector<address_v4> getIPs()
 {
-	std::set<address_v4, compareAddress_v4> IPSet;
+	std::set<address_v4> IPSet;
 	for(auto & it : ipList)
 		for(auto & address : it.second)
 			IPSet.insert(address);

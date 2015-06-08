@@ -67,18 +67,9 @@ private:
 	MeasuredTime times[numberOfMeasurements];
 };
 
-struct compareAddress_v4
-{
-	bool operator () (const address_v4 & a, const address_v4 & b)
-	{
-		return a.to_ulong() < b.to_ulong();
-	}
-};
-
 std::map<
 	address_v4,
-	std::map<std::string, MeasurementArray>,
-	compareAddress_v4
+	std::map<std::string, MeasurementArray>
 > measurements;
 
 } // namespace
@@ -88,6 +79,7 @@ namespace Measurement {
 
 void addMeasurement(address_v4 ip, const std::string & method, uint64_t time)
 {
+	std::cout << "addMeasurement(" << ip << ", " << method << ", " << time << ")\n";
 	measurements[ip][method].addMeasurement(time);
 }
 

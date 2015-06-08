@@ -22,6 +22,7 @@ public:
 	uint8_t read8(unsigned & pos) const;
 	uint16_t read16(unsigned & pos) const;
 	uint32_t read32(unsigned & pos) const;
+	uint64_t read64(unsigned & pos) const;
 
 private:
 	const uint8_t * data;

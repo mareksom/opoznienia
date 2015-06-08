@@ -57,7 +57,6 @@ uint16_t DataReader::read16(unsigned & pos) const
 		((uint16_t) (*this)[pos + 1] << 0);
 	pos += 2;
 	return value;
-	//return ntohs(value);
 }
 
 uint32_t DataReader::read32(unsigned & pos) const
@@ -69,5 +68,19 @@ uint32_t DataReader::read32(unsigned & pos) const
 		((uint32_t) (*this)[pos + 3] <<  0);
 	pos += 4;
 	return value;
-	//return ntohl(value);
+}
+
+uint64_t DataReader::read64(unsigned & pos) const
+{
+	uint64_t value =
+		((uint64_t) (*this)[pos + 0] << 56) |
+		((uint64_t) (*this)[pos + 1] << 48) |
+		((uint64_t) (*this)[pos + 2] << 40) |
+		((uint64_t) (*this)[pos + 3] << 32) |
+		((uint64_t) (*this)[pos + 4] << 24) |
+		((uint64_t) (*this)[pos + 5] << 16) |
+		((uint64_t) (*this)[pos + 6] <<  8) |
+		((uint64_t) (*this)[pos + 7] <<  0);
+	pos += 8;
+	return value;
 }
