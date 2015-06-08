@@ -62,10 +62,11 @@ void UDPMethod::handleReceive(const boost::system::error_code & error, std::size
 				unsigned pos = 0;
 				uint64_t timeSent = reader.read64(pos);
 				uint64_t timeReSent = reader.read64(pos);
+				uint64_t myTime = getMicroTime();
 				cout << "Got 16 answer: " << timeSent << " " << timeReSent << "\n";
-				if(it->second == timeSent && timeReSent > timeSent)
+				if(it->second == timeSent)
 				{
-					Measurement::addMeasurement(address, "udp", timeReSent - timeSent);
+					Measurement::addMeasurement(address, "udp", myTime - timeSent);
 					IPtoTime.erase(it);
 				}
 			}
