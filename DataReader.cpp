@@ -84,3 +84,21 @@ uint64_t DataReader::read64(unsigned & pos) const
 	pos += 8;
 	return value;
 }
+
+std::ostream & operator << (std::ostream & stream, const DataReader & reader)
+{
+	stream << "DataReader[" << reader.length << "] = {";
+	for(unsigned i = 0; i < reader.length; i++)
+	{
+		if(i)
+			stream << ", ";
+		for(int j = 7; j >= 0; j--)
+			if(reader.data[i] & (1 << j))
+				stream << "1";
+			else
+				stream << "0";
+		stream << " " << (int) reader.data[i];
+	}
+	stream << "}";
+	return stream;
+}

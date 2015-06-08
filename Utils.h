@@ -13,4 +13,7 @@ uint16_t OnesComplementSum(uint16_t * data, unsigned length);
 
 int randomInt(int a, int b);
 
+uint32_t BCD(uint32_t value);
+uint32_t BCDrev(uint32_t value);
+
 #endif

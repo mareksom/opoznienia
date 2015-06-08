@@ -1,6 +1,10 @@
+#include "Utils.h"
+
 #include <chrono>
 #include <arpa/inet.h>
+#include <vector>
 #include <random>
+#include <algorithm>
 
 uint64_t htonll(uint64_t x)
 {
@@ -41,4 +45,32 @@ int randomInt(int a, int b)
 	static std::default_random_engine engine(rd());
 	std::uniform_int_distribution<int> uniformDist(a, b);
 	return uniformDist(engine);
+}
+
+uint32_t BCD(uint32_t value)
+{
+	std::vector<uint8_t> v;
+	while(value)
+	{
+		v.push_back((uint8_t) (value % 10));
+		value /= 10;
+	}
+	std::reverse(v.begin(), v.end());
+	for(uint8_t i : v)
+		value = (value << 4) | i;
+	return value;
+}
+
+uint32_t BCDrev(uint32_t value)
+{
+	std::vector<uint8_t> v;
+	while(value)
+	{
+		v.push_back((uint8_t) value & 15);
+		value >>= 4;
+	}
+	std::reverse(v.begin(), v.end());
+	for(uint8_t i : v)
+		value = (value * 10) + i;
+	return value;
 }

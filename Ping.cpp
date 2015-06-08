@@ -9,19 +9,6 @@ PingPacket::PingPacket(DataReader reader, unsigned pos)
 {
 	try
 	{
-		auto wypisz = [] (uint8_t a) {
-			for(int i = 7; i>= 0; i--)
-				if(a & (1 << i))
-					std::cout << "1";
-				else
-					std::cout << "0";
-			std::cout << " ";
-		};
-		unsigned yolo = pos;
-		for(unsigned i = 0; i < reader.getLength(); i++)
-			wypisz(reader.read8(yolo));
-		std::cout << "\n";
-
 		unsigned position = pos;
 		type = reader.read8(position);
 		code = reader.read8(position);
@@ -29,19 +16,13 @@ PingPacket::PingPacket(DataReader reader, unsigned pos)
 		id = reader.read16(position);
 		sequence = reader.read16(position);
 		uint32_t data = reader.read32(position);
-		index = data & ((1 << 24) - 1);
-		group = data >> 24;
+		index = BCDrev(data >> 8);
+		group = BCDrev(data & 255);
 
-		uint16_t sum = ~OnesComplementSum(
-			reader.read16(pos),
-			OnesComplementSum((uint16_t*) reader.getPtr() + 2, 4)
-		);
+		uint16_t sum = OnesComplementSum((uint16_t*) reader.getPtr(), 6);
 		
-		if(checksum != sum and false)
-		{
-			std::cout << "checksum = " << checksum << ", sum = " << sum << "\n";
+		if(sum != 0x0000 and sum != (uint16_t) 0xFFFF)
 			throw MalformedPacket();
-		}
 	}
 	catch(DataReaderOutOfBounds & droob)
 	{
@@ -57,7 +38,7 @@ Data PingPacket::getData() const
 	data.append((uint16_t) 0); // checksum is 0 now
 	data.append(id);
 	data.append(sequence);
-	data.append(index | ((uint32_t) group << 24));
+	data.append((BCD(index) << 8) | BCD(group));
 
 	data.getAt16(2) = ~OnesComplementSum((uint16_t*) data.getPtr(), data.getLength() / 2);
 

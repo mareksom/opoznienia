@@ -2,6 +2,7 @@
 #define _DATAREADER_H_
 
 #include <exception>
+#include <iostream>
 #include <vector>
 #include <cstdint>
 
@@ -23,6 +24,8 @@ public:
 	uint16_t read16(unsigned & pos) const;
 	uint32_t read32(unsigned & pos) const;
 	uint64_t read64(unsigned & pos) const;
+
+	friend std::ostream & operator << (std::ostream & strem, const DataReader & reader);
 
 private:
 	const uint8_t * data;

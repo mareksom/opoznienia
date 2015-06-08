@@ -2,33 +2,35 @@
 #define _ICMPMETHOD_H_
 
 #include "Ping.h"
+#include "Data.h"
 
 #include <boost/asio.hpp>
 #include <vector>
+#include <map>
+#include <memory>
 #include <cstdint>
 
-class ICMPClient
+class ICMPMethod
 {
 public:
-	ICMPClient(boost::asio::ip::icmp::endpoint remote_endpoint);
+	ICMPMethod();
+
+	void runMeasurement();
 
 private:
-	void setTimerTime();
+	void startListening();
+	void handleReceive(const boost::system::error_code & error, std::size_t size);
+	void sendData(boost::asio::ip::icmp::endpoint where, std::shared_ptr<Data> data);
 
-	void startMeasurement();
-	void handleStartOfMeasurement(const boost::system::error_code & error);
-	void handleMessageSent(const boost::system::error_code & error);
-	void startReceiving();
-	void handleMessageReceived(const boost::system::error_code & error, std::size_t size);
-	void handleTimeout(const boost::system::error_code & error);
+	/* Measurement stuff */
+	uint16_t sequenceNumber;
+	std::map<boost::asio::ip::address_v4, uint64_t> IPtoTime;
 
+	/* Network stuff */
 	boost::asio::ip::icmp::socket socket;
-	boost::asio::ip::icmp::endpoint remote_endpoint, rcv_endpoint;
+	boost::asio::ip::icmp::endpoint rcv_endpoint;
 	std::vector<uint8_t> buffer;
 	boost::asio::deadline_timer timer;
-	uint64_t time_sent;
-
-	PingPacket request, response;
 };
 
 #endif

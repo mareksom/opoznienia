@@ -17,12 +17,14 @@ using std::cout;
 void program()
 {
 	MDnsDiscoverer mDnsDiscoverer;
-	UDPMethod udpMethod;
+	//UDPMethod udpMethod;
+	ICMPMethod icmpMethod;
 
 	boost::asio::deadline_timer timer(IO);
 
 	std::function<void(const boost::system::error_code&)> timeout = [&] (const boost::system::error_code & error) {
-		udpMethod.runMeasurement();
+		//udpMethod.runMeasurement();
+		icmpMethod.runMeasurement();
 		timer.expires_from_now(
 			boost::posix_time::milliseconds(Options::DeltaMeasurement())
 		);
