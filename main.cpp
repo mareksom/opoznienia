@@ -5,6 +5,7 @@
 #include "UDPMethod.h"
 #include "ICMPMethod.h"
 #include "TCPMethod.h"
+#include "Timeout.h"
 #include "MDns.h"
 #include "Utils.h"
 
@@ -18,25 +19,14 @@ using std::cout;
 void program()
 {
 	MDnsDiscoverer mDnsDiscoverer;
-	//UDPMethod udpMethod;
-	//ICMPMethod icmpMethod;
+	UDPMethod udpMethod;
+	ICMPMethod icmpMethod;
 	TCPMethod tcpMethod;
 
-	boost::asio::deadline_timer timer(IO);
-
-	std::function<void(const boost::system::error_code&)> timeout = [&] (const boost::system::error_code & error) {
-		//udpMethod.runMeasurement();
-		tcpMethod.runMeasurement();
-		timer.expires_from_now(
-			boost::posix_time::milliseconds(Options::DeltaMeasurement())
-		);
-		timer.async_wait(timeout);
-	};
-
-	timer.expires_from_now(
-		boost::posix_time::milliseconds(Options::DeltaMeasurement())
-	);
-	timer.async_wait(timeout);
+	Timeout timeout;
+	timeout.addMethod(&udpMethod);
+	timeout.addMethod(&icmpMethod);
+	timeout.addMethod(&tcpMethod);
 
 	cout << "przed run\n";
 	IO.run();

@@ -1,6 +1,7 @@
 #ifndef _ICMPMETHOD_H_
 #define _ICMPMETHOD_H_
 
+#include "Method.h"
 #include "Ping.h"
 #include "Data.h"
 
@@ -10,12 +11,12 @@
 #include <memory>
 #include <cstdint>
 
-class ICMPMethod
+class ICMPMethod : public Method
 {
 public:
 	ICMPMethod();
 
-	void runMeasurement();
+	virtual void runMeasurement();
 
 private:
 	void startListening();

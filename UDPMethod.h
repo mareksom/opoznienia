@@ -1,6 +1,7 @@
 #ifndef _UDPMETHOD_H_
 #define _UDPMETHOD_H_
 
+#include "Method.h"
 #include "Data.h"
 
 #include <boost/asio.hpp>
@@ -8,12 +9,12 @@
 #include <cstdint>
 #include <memory>
 
-class UDPMethod
+class UDPMethod : public Method
 {
 public:
 	UDPMethod();
 
-	void runMeasurement();
+	virtual void runMeasurement();
 
 private:
 	void startListening();
