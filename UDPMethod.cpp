@@ -42,11 +42,12 @@ void UDPMethod::handleReceive(const boost::system::error_code & error, std::size
 	{
 		DataReader reader(buffer.data(), size);
 		unsigned pos = 0;
-		uint64_t timeReceived = reader.read64(pos);
+		uint64_t timeSent = reader.read64(pos);
 		uint64_t myTime = getMicroTime();
 		auto data = std::make_shared<Data>();
-		data->append(timeReceived);
+		data->append(timeSent);
 		data->append(myTime);
+		cout << "Sending: " << timeSent << " " << myTime << "\n";
 		sendData(rcv_endpoint, data);
 	}
 	else if(size == 16) /* Answer */
@@ -61,6 +62,7 @@ void UDPMethod::handleReceive(const boost::system::error_code & error, std::size
 				unsigned pos = 0;
 				uint64_t timeSent = reader.read64(pos);
 				uint64_t timeReSent = reader.read64(pos);
+				cout << "Got 16 answer: " << timeSent << " " << timeReSent << "\n";
 				if(it->second == timeSent && timeReSent > timeSent)
 				{
 					Measurement::addMeasurement(address, "udp", timeReSent - timeSent);
