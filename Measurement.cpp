@@ -45,7 +45,7 @@ public:
 			i = firstEpoch;
 		else
 			i = measurementEpoch - numberOfMeasurements;
-		for(; i <= lastEpoch && i < measurementEpoch; i++)
+		for(; i <= lastEpoch and i < measurementEpoch; i++)
 		{
 			const MeasuredTime & t = times[i % numberOfMeasurements];
 			if(!t.empty())
@@ -97,7 +97,7 @@ std::map<std::string, uint64_t> getTimes(boost::asio::ip::address_v4 ip)
 	for(auto it = data.begin(); it != data.end();)
 	{
 		uint64_t time = it->second.meanTime();
-		if(time == 0 && it->second.checkIfShouldBeDeleted())
+		if(time == 0 and it->second.checkIfShouldBeDeleted())
 			data.erase(it++);
 		else
 		{

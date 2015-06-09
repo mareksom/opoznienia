@@ -30,7 +30,7 @@ void SetPortIfValid(const string & option, const string & value, int & destinati
 {
 	long int port;
 	port = strtol(value.c_str(), nullptr, 10);
-	if(port >= 1 && port <= 65535)
+	if(port >= 1 and port <= 65535)
 		destination = port;
 	else
 		err << "Expected port number after " << option << ", got " << value << errend;
@@ -40,7 +40,7 @@ void SetTimeIfValid(const string & option, const string & value, int & destinati
 {
 	double time;
 	time = strtod(value.c_str(), NULL);
-	if(time < 0.01 || time > 60 * 60 * 24)
+	if(time < 0.01 or time > 60 * 60 * 24)
 		err << "Expected time in seconds from range [0.01, " << 60 * 60 * 24 << "] after " << option << ", got " << value << errend;
 	else
 		destination = (int) (time * 1000);

@@ -21,9 +21,9 @@ void readAddressList(struct ifaddrs * addr, AddressList & result)
 		return;
 	
 	if((addr->ifa_addr->sa_family == AF_INET)
-		&& !(addr->ifa_flags & IFF_LOOPBACK)
-		&& (addr->ifa_flags & IFF_RUNNING)
-		&& (addr->ifa_flags & IFF_UP))
+		and !(addr->ifa_flags & IFF_LOOPBACK)
+		and (addr->ifa_flags & IFF_RUNNING)
+		and (addr->ifa_flags & IFF_UP))
 	{
 		struct sockaddr_in * sa = (struct sockaddr_in*) addr->ifa_addr;
 		result.emplace_back(

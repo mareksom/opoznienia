@@ -77,7 +77,7 @@ void TCPConnection::redraw()
 	std::stringstream ss;
 	ss << "\e[2J\e[H"; /* Clear screen & put cursor at the top-left corner */
 
-	for(int i = 0; i < screenHeight && lineNumber + i < (int) rows.size(); i++)
+	for(int i = 0; i < screenHeight and lineNumber + i < (int) rows.size(); i++)
 	{
 		if(i)
 			ss << '\n';
