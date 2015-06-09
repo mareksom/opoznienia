@@ -293,8 +293,7 @@ void MDnsDiscoverer::readPacketAnswer(const DNS_RRecord & record)
 			DNS_Name name = record.getRDataName();
 			if(name.empty())
 				return; /* The PTR response must have a name */
-			if(instanceToIP.insert(std::make_pair(
-						name, boost::asio::ip::address_v4())).second)
+			if(IPQueries.insert(name).second)
 			{
 				/* Send question about the address */
 				DNS_Packet packet;
@@ -316,14 +315,14 @@ void MDnsDiscoverer::readPacketAnswer(const DNS_RRecord & record)
 		DataReader reader(rdata.getPtr(), rdata.getLength());
 		unsigned pos = 0;
 		uint32_t ip = reader.read32(pos);
-		auto it = instanceToIP.find(name);
-		if(it == instanceToIP.end())
+		auto it = IPQueries.find(name);
+		if(it == IPQueries.end())
 			return; /* I didn't ask for this address... */
-		it->second = boost::asio::ip::address_v4(ip);
+		boost::asio::ip::address_v4 address(ip);
 		if(name.endsWith(DNS_Name("_ssh", "_tcp", "local")))
-			IPList::addNewIP(it->second, "ssh");
+			IPList::addNewIP(address, "ssh");
 		else if(name.endsWith(DNS_Name("_opoznienia", "_udp", "local")))
-			IPList::addNewIP(it->second, "opoznienia");
+			IPList::addNewIP(address, "opoznienia");
 	}
 }
 
@@ -371,7 +370,7 @@ void MDnsDiscoverer::runDiscovery()
 
 	/* Clear mappings */
 	IPList::removeTrash();
-	instanceToIP.clear();
+	IPQueries.clear();
 
 	/* Send all the PTR questions */
 	DNS_Packet packet;

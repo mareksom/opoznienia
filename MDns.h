@@ -6,7 +6,7 @@
 
 #include <boost/asio.hpp>
 #include <vector>
-#include <map>
+#include <set>
 #include <memory>
 #include <string>
 #include <cstdint>
@@ -36,7 +36,7 @@ private:
 	void handleProbeTimeout(const boost::system::error_code & error);
 
 	/* Discovery */
-	std::map<DNS_Name, boost::asio::ip::address_v4 > instanceToIP;
+	std::set<DNS_Name> IPQueries;
 
 	void startDiscoveryServer();
 	void listenForResponse();
