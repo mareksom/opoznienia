@@ -2,6 +2,7 @@
 #include "IOService.h"
 #include "Options.h"
 #include "Error.h"
+#include "Measurement.h"
 
 #include <boost/bind.hpp>
 
@@ -35,5 +36,6 @@ void Timeout::handleTimeout(const boost::system::error_code & error)
 		for(Method * method : methods)
 			method->runMeasurement();
 	}
+	Measurement::skipMeasurements();
 	startTimer();
 }

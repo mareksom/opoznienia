@@ -8,6 +8,7 @@
 #include "Timeout.h"
 #include "MDns.h"
 #include "Utils.h"
+#include "UIServer.h"
 
 #include <boost/asio.hpp>
 #include <boost/array.hpp>
@@ -28,9 +29,9 @@ void program()
 	timeout.addMethod(&icmpMethod);
 	timeout.addMethod(&tcpMethod);
 
-	cout << "przed run\n";
+	UIServer uiServer;
+
 	IO.run();
-	cout << "po run\n";
 }
 
 int main(int argc, char ** argv)

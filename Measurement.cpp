@@ -30,14 +30,22 @@ public:
 
 	void addMeasurement(uint64_t time)
 	{
+		lastEpoch = measurementEpoch;
 		times[measurementEpoch % numberOfMeasurements] = time;
 	}
 
 	uint64_t meanTime() const
 	{
+		if(checkIfShouldBeDeleted())
+			return 0;
 		uint64_t sumOfTimes = 0;
 		uint8_t numberOfTimes = 0;
-		for(int i = std::max(measurementEpoch - numberOfMeasurements, firstEpoch); i < measurementEpoch; i++)
+		unsigned i;
+		if(measurementEpoch < firstEpoch + numberOfMeasurements)
+			i = firstEpoch;
+		else
+			i = measurementEpoch - numberOfMeasurements;
+		for(; i < measurementEpoch; i++)
 		{
 			const MeasuredTime & t = times[i % numberOfMeasurements];
 			if(!t.empty())
@@ -53,12 +61,7 @@ public:
 
 	bool checkIfShouldBeDeleted() const
 	{
-		if(measurementEpoch - firstEpoch < numberOfMeasurements)
-			return false;
-		for(int i = measurementEpoch - numberOfMeasurements; i < measurementEpoch; i++)
-			if(!times[i % numberOfMeasurements].empty())
-				return false;
-		return true;
+		return lastEpoch + numberOfMeasurements <= measurementEpoch;
 	}
 
 private:
