@@ -34,7 +34,7 @@ void UDPMethod::startListening()
 void UDPMethod::handleReceive(const boost::system::error_code & error, std::size_t size)
 {
 	if(error)
-		err << "UDPMethod::handleReceive: " << error.message() << "\n";
+		connectionerr << "UDPMethod::handleReceive: " << error.message() << "\n";
 	else if(size == 8) /* Request */
 	{
 		DataReader reader(buffer.data(), size);
@@ -80,7 +80,7 @@ void UDPMethod::sendData(udp::endpoint where, std::shared_ptr<Data> data)
 		where,
 		[data] (const boost::system::error_code & error, std::size_t) {
 			if(error)
-				err << "UDPMethod::sendData: " << error.message() << "\n";
+				connectionerr << "UDPMethod::sendData: " << error.message() << "\n";
 		}
 	);
 }

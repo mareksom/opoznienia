@@ -30,7 +30,7 @@ void Timeout::startTimer()
 void Timeout::handleTimeout(const boost::system::error_code & error)
 {
 	if(error)
-		err << "Timeout::handleTimeout: " << error.message() << "\n";
+		connectionerr << "Timeout::handleTimeout: " << error.message() << "\n";
 	else
 	{
 		for(Method * method : methods)

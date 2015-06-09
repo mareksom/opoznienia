@@ -63,7 +63,7 @@ void MDnsDiscoverer::determineName()
 void MDnsDiscoverer::startProbes(const boost::system::error_code & error)
 {
 	if(error)
-		err << "MDnsDiscoverer::startProbes: " << error.message() << errend;
+		connectionerr << "MDnsDiscoverer::startProbes: " << error.message() << errend;
 	else
 	{
 		nameNumber++;
@@ -107,7 +107,7 @@ void MDnsDiscoverer::handleProbeSent(const boost::system::error_code & error, st
 	if(error == operation_aborted)
 		nextTry();
 	else if(error)
-		err << "MDnsDiscoverer::handleProbeSent: " << error.message() << errend;
+		connectionerr << "MDnsDiscoverer::handleProbeSent: " << error.message() << errend;
 	else
 	{
 		setTimer(250);
@@ -136,7 +136,7 @@ void MDnsDiscoverer::handleProbeResponse(const boost::system::error_code & error
 	if(error == operation_aborted)
 		nextTry();
 	else if(error)
-		err << "MDnsDiscoverer::handleProbeResponse: " << error.message() << errend;
+		connectionerr << "MDnsDiscoverer::handleProbeResponse: " << error.message() << errend;
 	else
 	{
 		try
@@ -167,7 +167,7 @@ void MDnsDiscoverer::handleProbeTimeout(const boost::system::error_code & error)
 	if(error == operation_aborted)
 		;
 	else if(error)
-		err << "MDnsDiscoverer::handleProbeTimeout: " << error.message() << errend;
+		connectionerr << "MDnsDiscoverer::handleProbeTimeout: " << error.message() << errend;
 	else
 		socket.cancel();
 }
@@ -350,7 +350,7 @@ void MDnsDiscoverer::sendPacket(const DNS_Packet & packet, bool unicast)
 	auto data = std::make_shared<Data>(packet.getData());
 	auto handler = [data] (const boost::system::error_code & error, std::size_t) {
 		if(error)
-			err << "MDnsDiscoverer::sendPacket: " << error.message() << "\n";
+			connectionerr << "MDnsDiscoverer::sendPacket: " << error.message() << "\n";
 	};
 
 	socket.async_send_to(
@@ -394,7 +394,7 @@ void MDnsDiscoverer::handleDiscoveryTimeout(const boost::system::error_code & er
 	if(error == operation_aborted)
 		;
 	else if(error)
-		err << "MDnsDiscoverer::handleDiscoveryTimeout: " << error.message() << errend;
+		connectionerr << "MDnsDiscoverer::handleDiscoveryTimeout: " << error.message() << errend;
 	else
 		runDiscovery();
 }

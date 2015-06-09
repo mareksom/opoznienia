@@ -73,7 +73,7 @@ void TCPConnection::redraw()
 				if(error == operation_aborted)
 					;
 				else
-					err << "TCPConnection::redraw: " << error.message() << " " << countdownToSuicide << "\n";
+					connectionerr << "TCPConnection::redraw: " << error.message() << " " << countdownToSuicide << "\n";
 				IWannaDie();
 			}
 		}
@@ -101,7 +101,7 @@ void TCPConnection::handleReceive(const boost::system::error_code & error, std::
 		if(error == operation_aborted)
 			;
 		else
-			err << "TCPConnection::handleReceive: " << error.message() << "\n";
+			connectionerr << "TCPConnection::handleReceive: " << error.message() << "\n";
 		IWannaDie();
 	}
 	else
@@ -138,7 +138,7 @@ void TCPConnection::handleTimeout(const boost::system::error_code & error)
 		if(error == operation_aborted)
 			;
 		else
-			err << "TCPConnection::handleTimeout: " << error.message() << "\n";
+			connectionerr << "TCPConnection::handleTimeout: " << error.message() << "\n";
 		IWannaDie();
 	}
 	else
@@ -152,7 +152,7 @@ void TCPConnection::IWannaDie()
 {
 	if(countdownToSuicide == 0)
 	{
-		err << "TCPConnection::IWannaDie: closing connection\n";
+		connectionerr << "TCPConnection::IWannaDie: closing connection\n";
 		delete this;
 	}
 	else
@@ -179,7 +179,7 @@ void UIServer::handleAccept(const boost::system::error_code & error, TCPConnecti
 {
 	if(error)
 	{
-		err << "UIServer::handleAccept: " << error.message() << "\n";
+		connectionerr << "UIServer::handleAccept: " << error.message() << "\n";
 		delete connection;
 	}
 	else
@@ -292,7 +292,7 @@ void UIServer::refreshData()
 	
 	if(spaceLeft < 0)
 	{
-		err << "Results are too wide to show them on " << screenWidth << " width screen!\n";
+		connectionerr << "Results are too wide to show them on " << screenWidth << " width screen!\n";
 		spaceLeft = 0;
 	}
 
@@ -339,7 +339,7 @@ void UIServer::startTimer()
 void UIServer::handleTimeout(const boost::system::error_code & error)
 {
 	if(error)
-		err << "UIServer::handleTimeout: " << error.message() << "\n";
+		connectionerr << "UIServer::handleTimeout: " << error.message() << "\n";
 	else
 		refreshData();
 	startTimer();

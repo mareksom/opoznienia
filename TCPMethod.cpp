@@ -23,7 +23,7 @@ void TCPMethod::connectTo(boost::asio::ip::address_v4 address)
 		tcp::endpoint(address, 22),
 		[socket, address, startTime] (const boost::system::error_code & error) {
 			if(error)
-				err << "TCPMethod::connectTo(" << address << "): " << error.message() << "\n";
+				connectionerr << "TCPMethod::connectTo(" << address << "): " << error.message() << "\n";
 			else
 			{
 				uint64_t endTime = getMicroTime();

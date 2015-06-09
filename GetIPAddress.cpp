@@ -45,7 +45,7 @@ AddressList GetIPAddresses()
 {
 	struct ifaddrs * addr;
 	if(getifaddrs(&addr) == -1)
-		err << "GetIPAddresses::getifaddrs: " << strerror(errno) << errend;
+		connectionerr << "GetIPAddresses::getifaddrs: " << strerror(errno) << errend;
 	AddressList result;
 	readAddressList(addr, result);
 	freeifaddrs(addr);

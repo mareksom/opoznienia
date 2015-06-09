@@ -38,7 +38,7 @@ void ICMPMethod::startListening()
 void ICMPMethod::handleReceive(const boost::system::error_code & error, std::size_t size)
 {
 	if(error)
-		err << "ICMPMethod::handleReceive: " << error.message() << "\n";
+		connectionerr << "ICMPMethod::handleReceive: " << error.message() << "\n";
 	else
 	{
 		try
@@ -82,7 +82,7 @@ void ICMPMethod::sendData(icmp::endpoint where, std::shared_ptr<Data> data)
 		where,
 		[data] (const boost::system::error_code & error, std::size_t) {
 			if(error)
-				err << "ICMPMethod::sendData: " << error.message() << "\n";
+				connectionerr << "ICMPMethod::sendData: " << error.message() << "\n";
 		}
 	);
 }

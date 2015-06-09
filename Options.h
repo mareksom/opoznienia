@@ -12,7 +12,9 @@ namespace Options {
 	int DeltaSearch(); /* time delta between searching for another serwers (in milliseconds) */
 	int DeltaRefresh(); /* time delta between refreshing user interface (in milliseconds) */
 
-	int ServerSSH(); /* 0/1 -- annoucing _ssh._tcp */
+	bool ServerSSH(); /* 0/1 -- annoucing _ssh._tcp */
+
+	bool PrintConnectionErrors(); /* Should connection errors be printed? */
 
 	void InitArguments(int argc, char ** argv);
 	void PrintOptions();

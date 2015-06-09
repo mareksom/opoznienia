@@ -23,7 +23,8 @@ int portInterface = 3637;
 int deltaMeasurement = 1 * 1000; /* milliseconds */
 int deltaSearch = 10 * 1000; /* milliseconds */
 int deltaRefresh = 1 * 1000; /* milliseconds */
-int serverSSH = 0;
+bool serverSSH = 0;
+bool printConnectionErrors = false;
 
 void SetPortIfValid(const string & option, const string & value, int & destination)
 {
@@ -72,14 +73,20 @@ void SetDeltaRefresh(const string & option, const string & value)
 
 void SetServerSSH(const string & option)
 {
-	serverSSH = 1;
+	serverSSH = true;
+}
+
+void SetPrintConnectionErrors(const string & option)
+{
+	printConnectionErrors = true;
 }
 
 typedef function<void(const string &)> ZeroArgument;
 typedef function<void(const string &, const string &)> OneArgument;
 
 vector< pair< string, ZeroArgument > > ZeroArgumentFunctions = {
-	{"-s", SetServerSSH}
+	{"-s", SetServerSSH},
+	{"-err", SetPrintConnectionErrors}
 };
 
 vector< pair< string, OneArgument > > OneArgumentFunctions = {
@@ -119,21 +126,23 @@ void InitArguments(int argc, char ** argv)
 	err << "Unknown option " << argv[0] << errend;
 }
 
-int PortUDP()          { return portUDP;          }
-int PortInterface()    { return portInterface;    }
-int DeltaMeasurement() { return deltaMeasurement; }
-int DeltaSearch()      { return deltaSearch;      }
-int DeltaRefresh()     { return deltaRefresh;     }
-int ServerSSH()        { return serverSSH;        }
+int  PortUDP()               { return portUDP;               }
+int  PortInterface()         { return portInterface;         }
+int  DeltaMeasurement()      { return deltaMeasurement;      }
+int  DeltaSearch()           { return deltaSearch;           }
+int  DeltaRefresh()          { return deltaRefresh;          }
+bool  ServerSSH()             { return serverSSH;             }
+bool PrintConnectionErrors() { return printConnectionErrors; }
 
 void PrintOptions()
 {
-	cout << "              UDP port:  " << PortUDP() << endl;
-	cout << "        Interface port:  " <<  PortInterface() << endl;
-	cout << "Measurement delta time:  " << (double) DeltaMeasurement() / 1000 << "s" << endl;
-	cout << "mDNS-search delta time:  " << (double) DeltaSearch() / 1000 << "s" << endl;
-	cout << "    Refresh delta time:  " << (double) DeltaRefresh() / 1000 << "s" << endl;
-	cout << "   Annoucing _ssh._tcp:  " << (ServerSSH() ? "ON" : "OFF") << endl;
+	cout << "              UDP port   (-u):  " << PortUDP() << endl;
+	cout << "        Interface port   (-U):  " <<  PortInterface() << endl;
+	cout << "Measurement delta time   (-t):  " << (double) DeltaMeasurement() / 1000 << "s" << endl;
+	cout << "mDNS-search delta time   (-T):  " << (double) DeltaSearch() / 1000 << "s" << endl;
+	cout << "    Refresh delta time   (-v):  " << (double) DeltaRefresh() / 1000 << "s" << endl;
+	cout << "   Annoucing _ssh._tcp   (-s):  " << (ServerSSH() ? "ON" : "OFF") << endl;
+	cout << "     Connection errors (-err):  " << (PrintConnectionErrors() ? "ON" : "OFF") << endl;
 }
 
 } // namespace Options

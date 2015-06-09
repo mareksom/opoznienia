@@ -2,14 +2,20 @@
 
 #include <cstdlib>
 
+Error::Error(bool connection) : connection(connection)
+{
+}
+
 Error & Error::operator << (const ErrorEnd & end)
 {
-	std::cerr << std::endl;
+	if(!connection or Options::PrintConnectionErrors())
+		std::cerr << std::endl;
 	throw ReturnException(EXIT_FAILURE);
 }
 
 Error::ErrorEnd errend;
-Error err;
+Error err(false);
+Error connectionerr(true);
 
 ReturnException::ReturnException(int exitstatus) : exitstatus(exitstatus)
 {
