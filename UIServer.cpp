@@ -41,8 +41,31 @@ TCPConnection::TCPConnection(std::vector<std::string> & rows) :
 
 void TCPConnection::start()
 {
+	configureTelnet();
 	setTimer();
 	startListening();
+}
+
+void TCPConnection::configureTelnet()
+{
+	std::stringstream ss;
+	ss << "\377\375\042"; /* Don't wait for enter to send data */
+	std::shared_ptr<std::string> data = std::make_shared<std::string>(ss.str());
+	countdownToSuicide++;
+	socket.async_send(
+		boost::asio::buffer(data->data(), data->size()),
+		[this, data] (const boost::system::error_code & error, std::size_t) {
+			countdownToSuicide--;
+			if(error)
+			{
+				if(error == operation_aborted)
+					;
+				else
+					connectionerr << "TCPConnection::configureTelnet: " << error.message() << "\n";
+				IWannaDie();
+			}
+		}
+	);
 }
 
 void TCPConnection::redraw()
@@ -52,7 +75,7 @@ void TCPConnection::redraw()
 	while(lineNumber > 0 and ((int) rows.size() - lineNumber) < screenHeight)
 		lineNumber--;
 	std::stringstream ss;
-	ss << "\e[2J\e[H";
+	ss << "\e[2J\e[H"; /* Clear screen & put cursor at the top-left corner */
 
 	for(int i = 0; i < screenHeight && lineNumber + i < (int) rows.size(); i++)
 	{

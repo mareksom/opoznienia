@@ -6,6 +6,7 @@
 #include "Error.h"
 
 using boost::asio::ip::tcp;
+using boost::asio::error::operation_aborted;
 
 void TCPMethod::runMeasurement()
 {
@@ -25,7 +26,9 @@ void TCPMethod::connectTo(boost::asio::ip::address_v4 address, tcp::socket & soc
 	socket.async_connect(
 		tcp::endpoint(address, 22),
 		[address, startTime] (const boost::system::error_code & error) {
-			if(error)
+			if(error == operation_aborted)
+				;
+			else if(error)
 				connectionerr << "TCPMethod::connectTo(" << address << "): " << error.message() << "\n";
 			else
 			{

@@ -17,6 +17,7 @@ public:
 	void start();
 
 private:
+	void configureTelnet();
 	void redraw();
 
 	std::vector<uint8_t> buffer;
