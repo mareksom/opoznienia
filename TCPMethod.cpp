@@ -11,7 +11,7 @@ using boost::asio::ip::tcp;
 
 void TCPMethod::runMeasurement()
 {
-	for(auto & address : IPList::getIPs())
+	for(auto & address : IPList::getIPs("ssh"))
 		connectTo(address);
 }
 

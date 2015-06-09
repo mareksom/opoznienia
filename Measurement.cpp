@@ -45,7 +45,7 @@ public:
 			i = firstEpoch;
 		else
 			i = measurementEpoch - numberOfMeasurements;
-		for(; i < measurementEpoch; i++)
+		for(; i <= lastEpoch && i < measurementEpoch; i++)
 		{
 			const MeasuredTime & t = times[i % numberOfMeasurements];
 			if(!t.empty())
@@ -82,7 +82,6 @@ namespace Measurement {
 
 void addMeasurement(address_v4 ip, const std::string & method, uint64_t time)
 {
-	std::cout << "addMeasurement(" << ip << ", " << method << ", " << time << ")\n";
 	measurements[ip][method].addMeasurement(time);
 }
 

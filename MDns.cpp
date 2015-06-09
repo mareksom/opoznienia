@@ -370,6 +370,7 @@ void MDnsDiscoverer::runDiscovery()
 	));
 
 	/* Clear mappings */
+	IPList::removeTrash();
 	instanceToIP.clear();
 
 	/* Send all the PTR questions */

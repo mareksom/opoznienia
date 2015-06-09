@@ -13,22 +13,34 @@ std::map<
 	std::set<address_v4>
 > ipList;
 
+std::set<address_v4> newlyAddedIPs;
+
 } // namespace
 
 namespace IPList {
 
 void addNewIP(address_v4 ip, const std::string & service)
 {
-	std::cout << "Got new IP: " << ip << " for service: " << service << "\n";
+	newlyAddedIPs.insert(ip);
 	ipList[service].insert(ip);
 }
 
-void removeIP(address_v4 ip, const std::string & service)
+void removeIP(address_v4 ip)
 {
-	auto serviceList = ipList[service];
-	serviceList.erase(ip);
-	if(serviceList.empty())
-		ipList.erase(ipList.find(service));
+	for(auto & service : ipList)
+	{
+		auto it = service.second.find(ip);
+		if(it != service.second.end())
+			service.second.erase(it);
+	}
+}
+
+void removeTrash()
+{
+	for(const auto & address : getIPs())
+		if(newlyAddedIPs.find(address) == newlyAddedIPs.end())
+			removeIP(address);
+	newlyAddedIPs.clear();
 }
 
 std::vector<address_v4> getIPs()
@@ -40,13 +52,12 @@ std::vector<address_v4> getIPs()
 	return std::vector<address_v4>(IPSet.begin(), IPSet.end());
 }
 
-std::vector<std::string> getServices(address_v4 ip)
+std::vector<address_v4> getIPs(const std::string & service)
 {
-	std::vector<std::string> ret;
-	for(auto & it : ipList)
-		if(it.second.find(ip) != it.second.end())
-			ret.push_back(it.first);
-	return ret;
+	auto it = ipList.find(service);
+	if(it == ipList.end())
+		return std::vector<address_v4>();
+	return std::vector<address_v4>(it->second.begin(), it->second.end());
 }
 
 } // namespace IPList

@@ -88,7 +88,7 @@ void UDPMethod::sendData(udp::endpoint where, std::shared_ptr<Data> data)
 void UDPMethod::runMeasurement()
 {
 	IPtoTime.clear();
-	for(auto & address : IPList::getIPs())
+	for(auto & address : IPList::getIPs("opoznienia"))
 	{
 		auto data = std::make_shared<Data>();
 		uint64_t time = getMicroTime();

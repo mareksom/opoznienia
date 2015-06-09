@@ -278,8 +278,6 @@ void UIServer::refreshData()
 			m[std::string("icmp")],
 			m[std::string("tcp")]
 		);
-		if(entries.back().empty())
-			entries.pop_back();
 	}
 
 	std::sort(entries.begin(), entries.end());

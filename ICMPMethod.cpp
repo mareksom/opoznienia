@@ -13,7 +13,6 @@
 #include <iostream>
 
 using boost::asio::ip::icmp;
-using std::cout;
 
 ICMPMethod::ICMPMethod() :
 	sequenceNumber(0),
@@ -92,7 +91,7 @@ void ICMPMethod::runMeasurement()
 {
 	sequenceNumber++;
 	IPtoTime.clear();
-	for(auto & address : IPList::getIPs())
+	for(auto & address : IPList::getIPs("opoznienia"))
 	{
 		PingPacket echo;
 		echo.setType(PingPacket::ECHO_MESSAGE);

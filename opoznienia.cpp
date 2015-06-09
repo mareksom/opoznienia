@@ -15,8 +15,6 @@
 #include <iostream>
 #include <functional>
 
-using std::cout;
-
 void program()
 {
 	MDnsDiscoverer mDnsDiscoverer;
