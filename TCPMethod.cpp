@@ -5,23 +5,26 @@
 #include "IPList.h"
 #include "Error.h"
 
-#include <memory>
-
 using boost::asio::ip::tcp;
 
 void TCPMethod::runMeasurement()
 {
-	for(auto & address : IPList::getIPs("ssh"))
-		connectTo(address);
+	sockets.clear();
+	auto addressList = IPList::getIPs("ssh");
+	sockets.reserve(addressList.size());
+	for(unsigned i = 0; i < addressList.size(); i++)
+	{
+		sockets.emplace_back(IO);
+		connectTo(addressList[i], sockets[i]);
+	}
 }
 
-void TCPMethod::connectTo(boost::asio::ip::address_v4 address)
+void TCPMethod::connectTo(boost::asio::ip::address_v4 address, tcp::socket & socket)
 {
-	std::shared_ptr<tcp::socket> socket = std::make_shared<tcp::socket>(IO);
 	uint64_t startTime = getMicroTime();
-	socket->async_connect(
+	socket.async_connect(
 		tcp::endpoint(address, 22),
-		[socket, address, startTime] (const boost::system::error_code & error) {
+		[address, startTime] (const boost::system::error_code & error) {
 			if(error)
 				connectionerr << "TCPMethod::connectTo(" << address << "): " << error.message() << "\n";
 			else
